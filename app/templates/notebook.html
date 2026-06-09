@@ -185,10 +185,38 @@
                             </form>
                         </div>
 
+                        <!-- Extended Slides -->
+                        <div>
+                            <label class="form-label small fw-semibold mb-1">
+                                Extended Presentation
+                                <span class="badge bg-primary ms-1">до 64 слайдов</span>
+                            </label>
+                            <form action="/notebooks/{{ notebook.id }}/artifacts/slides" method="post">
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text">Частей</span>
+                                    <select name="parts" class="form-select form-select-sm">
+                                        <option value="2">2 × 16 = 32 слайда</option>
+                                        <option value="3">3 × 16 = 48 слайдов</option>
+                                        <option value="4">4 × 16 = 64 слайда</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-outline-primary">
+                                        <i class="bi bi-easel me-1"></i>Generate
+                                    </button>
+                                </div>
+                            </form>
+                            <div id="slides-download-btn" class="mt-1 d-none">
+                                <a href="/notebooks/{{ notebook.id }}/artifacts/slides/download"
+                                   class="btn btn-sm btn-success w-100">
+                                    <i class="bi bi-download me-1"></i>Скачать PPTX
+                                </a>
+                            </div>
+                        </div>
+
                         <div class="alert alert-light border small mb-0 py-2">
                             <i class="bi bi-clock me-1"></i>
-                            Flashcards &amp; study guides: ~2–5 min.<br>
-                            Podcast: up to 20 min. Refresh to check status.
+                            Flashcards &amp; study guides: ~2–5 мин.<br>
+                            Презентация (extended): ~5–15 мин.<br>
+                            Podcast: до 20 мин. Refresh для проверки.
                         </div>
                     </div>
                 </div>
@@ -349,6 +377,8 @@
     const genBanner = document.getElementById("gen-banner");
     const genBannerMsg = document.getElementById("gen-banner-msg");
 
+    const slidesDownloadBtn = document.getElementById("slides-download-btn");
+
     async function pollGenerationStatus() {
         try {
             const res = await fetch(`/notebooks/${notebookId}/generation-status`);
@@ -359,6 +389,9 @@
                 genBannerMsg.textContent = data.status;
             } else {
                 genBanner.classList.add("d-none");
+            }
+            if (data.slides_ready && slidesDownloadBtn) {
+                slidesDownloadBtn.classList.remove("d-none");
             }
         } catch (_) { /* ignore */ }
     }

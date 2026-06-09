@@ -1,9 +1,10 @@
+import copy
 import tempfile
 from pathlib import Path
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Form, HTTPException, Request
 from fastapi.responses import FileResponse, RedirectResponse
-from notebooklm import NotebookLMClient
+from notebooklm import NotebookLMClient, SlideDeckFormat
 
 from app.dependencies import get_client
 
@@ -14,6 +15,68 @@ _DOWNLOADS.mkdir(exist_ok=True)
 
 # In-memory generation status: notebook_id -> message string
 _gen_status: dict[str, str] = {}
+
+
+def _merge_pptx(files: list[Path]) -> Path:
+    """Merge multiple PPTX files into one by copying slide XML."""
+    from pptx import Presentation
+    from pptx.oxml.ns import qn
+
+    base = Presentation(str(files[0]))
+
+    for src_path in files[1:]:
+        src = Presentation(str(src_path))
+        # Copy slide layouts/masters mapping isn't needed for simple copy
+        for slide in src.slides:
+            # Add a blank slide using the first layout of base
+            layout = base.slide_layouts[0]
+            new_slide = base.slides.add_slide(layout)
+            # Remove placeholder shapes from the blank slide
+            sp_tree = new_slide.shapes._spTree
+            for ph in sp_tree.findall(qn("p:sp")):
+                sp_tree.remove(ph)
+            # Copy all shapes from source slide
+            for el in slide.shapes._spTree:
+                sp_tree.append(copy.deepcopy(el))
+
+    out = _DOWNLOADS / f"{files[0].stem}_merged.pptx"
+    base.save(str(out))
+    return out
+
+
+async def _run_extended_slides(app, notebook_id: str, parts: int):
+    """Generate `parts` slide decks and merge them into one PPTX."""
+    client: NotebookLMClient = app.state.notebooklm
+    _gen_status[notebook_id] = f"Extended slides: generating part 1 of {parts}…"
+
+    part_instructions = [
+        "Cover the first main topics and key concepts from the material.",
+        "Cover the next set of topics, data, and supporting details.",
+        "Cover advanced topics, case studies, conclusions, and recommendations.",
+        "Cover additional details, appendix material, and supplementary information.",
+    ]
+
+    pptx_files: list[Path] = []
+    try:
+        for i in range(parts):
+            _gen_status[notebook_id] = f"Extended slides: generating part {i + 1} of {parts}…"
+            instructions = part_instructions[i % len(part_instructions)]
+            task = await client.artifacts.generate_slide_deck(
+                notebook_id,
+                instructions=instructions,
+                slide_format=SlideDeckFormat.DETAILED_DECK,
+            )
+            await client.artifacts.wait_for_completion(notebook_id, task.task_id, timeout=600.0)
+
+            out = _DOWNLOADS / f"{notebook_id}_slides_part{i + 1}.pptx"
+            await client.artifacts.download_slide_deck(notebook_id, out, format="pptx")
+            pptx_files.append(out)
+
+        _gen_status[notebook_id] = "Extended slides: merging files…"
+        merged = _merge_pptx(pptx_files)
+        _gen_status[notebook_id] = f"__slides_ready__{merged}"
+    except Exception as exc:
+        _gen_status[notebook_id] = f"Generation failed: {exc}"
 
 
 async def _run_generation(app, notebook_id: str, kind: str, **kwargs):
@@ -78,9 +141,43 @@ async def generate_audio(
     )
 
 
+@router.post("/notebooks/{notebook_id}/artifacts/slides")
+async def generate_extended_slides(
+    notebook_id: str,
+    request: Request,
+    background_tasks: BackgroundTasks,
+    parts: int = Form(2),
+    client: NotebookLMClient = Depends(get_client),
+):
+    parts = max(1, min(parts, 4))  # clamp 1–4
+    background_tasks.add_task(_run_extended_slides, request.app, notebook_id, parts)
+    slides = parts * 16
+    return RedirectResponse(
+        url=f"/notebooks/{notebook_id}?status=Generating+{slides}+slides+in+{parts}+parts.+Refresh+to+check+status.",
+        status_code=303,
+    )
+
+
+@router.get("/notebooks/{notebook_id}/artifacts/slides/download")
+async def download_extended_slides(notebook_id: str):
+    status = _gen_status.get(notebook_id, "")
+    if status.startswith("__slides_ready__"):
+        path = Path(status.removeprefix("__slides_ready__"))
+        if path.exists():
+            return FileResponse(
+                path=str(path),
+                media_type="application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                filename="presentation.pptx",
+            )
+    raise HTTPException(status_code=404, detail="Slides not ready yet. Please wait and refresh.")
+
+
 @router.get("/notebooks/{notebook_id}/generation-status")
 async def generation_status(notebook_id: str):
-    return {"status": _gen_status.get(notebook_id)}
+    status = _gen_status.get(notebook_id)
+    if status and status.startswith("__slides_ready__"):
+        return {"status": None, "slides_ready": True}
+    return {"status": status, "slides_ready": False}
 
 
 @router.get("/notebooks/{notebook_id}/artifacts/audio/download")
