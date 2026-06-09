@@ -22,7 +22,7 @@ templates = Jinja2Templates(directory=str(Path(__file__).resolve().parent.parent
 @router.get("/", response_class=HTMLResponse)
 async def index(request: Request, client: NotebookLMClient = Depends(get_client)):
     notebooks = await client.notebooks.list()
-    return templates.TemplateResponse("index.html", {"request": request, "notebooks": notebooks})
+    return templates.TemplateResponse(request, "index.html", {"notebooks": notebooks})
 
 
 @router.post("/notebooks")
@@ -48,9 +48,9 @@ async def notebook_detail(
     except NotebookNotFoundError:
         raise HTTPException(status_code=404, detail="Notebook not found")
     return templates.TemplateResponse(
+        request,
         "notebook.html",
         {
-            "request": request,
             "notebook": notebook,
             "sources": sources,
             "artifacts": artifacts_list,
