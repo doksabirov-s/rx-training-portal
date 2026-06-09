@@ -44,13 +44,36 @@ def _merge_pptx(files: list[Path]) -> Path:
     return out
 
 
-async def _run_extended_slides(app, notebook_id: str, parts: int, topic: str = ""):
-    """Generate `parts` slide decks and merge them into one PPTX."""
+async def _research_and_import(client: NotebookLMClient, notebook_id: str, topic: str):
+    """Search web for topic and import found sources into the notebook."""
+    research = await client.research.start(notebook_id, topic, source="web", mode="deep")
+    if not research:
+        return
+    task = await client.research.wait_for_completion(
+        notebook_id, research.task_id, timeout=300.0
+    )
+    if task and task.sources:
+        sources = [{"url": s.url, "title": s.title} for s in task.sources if s.url]
+        if sources:
+            await client.research.import_sources_with_verification(
+                notebook_id, research.task_id, sources
+            )
+
+
+async def _run_extended_slides(
+    app, notebook_id: str, parts: int, topic: str = "", auto_search: bool = False
+):
+    """Optionally search web, then generate `parts` slide decks and merge."""
     client: NotebookLMClient = app.state.notebooklm
-    _gen_status[notebook_id] = f"Extended slides: generating part 1 of {parts}…"
+
+    if auto_search and topic.strip():
+        _gen_status[notebook_id] = f"Поиск источников в интернете по теме: «{topic[:60]}»…"
+        try:
+            await _research_and_import(client, notebook_id, topic)
+        except Exception as exc:
+            _gen_status[notebook_id] = f"Поиск завершён с ошибкой ({exc}), продолжаю генерацию…"
 
     topic_prefix = f"Topic: {topic}. " if topic.strip() else ""
-
     part_suffixes = [
         "Focus on introduction, key definitions, and main concepts.",
         "Focus on detailed analysis, data, mechanisms, and supporting evidence.",
@@ -61,7 +84,7 @@ async def _run_extended_slides(app, notebook_id: str, parts: int, topic: str = "
     pptx_files: list[Path] = []
     try:
         for i in range(parts):
-            _gen_status[notebook_id] = f"Extended slides: generating part {i + 1} of {parts}…"
+            _gen_status[notebook_id] = f"Extended slides: генерирую часть {i + 1} из {parts}…"
             instructions = topic_prefix + part_suffixes[i % len(part_suffixes)]
             task = await client.artifacts.generate_slide_deck(
                 notebook_id,
@@ -74,11 +97,11 @@ async def _run_extended_slides(app, notebook_id: str, parts: int, topic: str = "
             await client.artifacts.download_slide_deck(notebook_id, out, format="pptx")
             pptx_files.append(out)
 
-        _gen_status[notebook_id] = "Extended slides: merging files…"
+        _gen_status[notebook_id] = "Extended slides: объединяю файлы…"
         merged = _merge_pptx(pptx_files)
         _gen_status[notebook_id] = f"__slides_ready__{merged}"
     except Exception as exc:
-        _gen_status[notebook_id] = f"Generation failed: {exc}"
+        _gen_status[notebook_id] = f"Ошибка генерации: {exc}"
 
 
 async def _run_generation(app, notebook_id: str, kind: str, **kwargs):
@@ -150,10 +173,14 @@ async def generate_extended_slides(
     background_tasks: BackgroundTasks,
     parts: int = Form(2),
     topic: str = Form(""),
+    auto_search: str = Form(""),
     client: NotebookLMClient = Depends(get_client),
 ):
     parts = max(1, min(parts, 4))  # clamp 1–4
-    background_tasks.add_task(_run_extended_slides, request.app, notebook_id, parts, topic)
+    do_search = bool(auto_search) and bool(topic.strip())
+    background_tasks.add_task(
+        _run_extended_slides, request.app, notebook_id, parts, topic, do_search
+    )
     slides = parts * 16
     return RedirectResponse(
         url=f"/notebooks/{notebook_id}?status=Generating+{slides}+slides+in+{parts}+parts.+Refresh+to+check+status.",
