@@ -192,6 +192,9 @@
                                 <span class="badge bg-primary ms-1">до 64 слайдов</span>
                             </label>
                             <form action="/notebooks/{{ notebook.id }}/artifacts/slides" method="post">
+                                <textarea name="topic" class="form-control form-control-sm mb-2"
+                                          rows="2"
+                                          placeholder="Тема и задание (необязательно): например «Фармакология Турбомикрон Г: механизм действия, дозировки, показания»"></textarea>
                                 <div class="input-group input-group-sm">
                                     <span class="input-group-text">Частей</span>
                                     <select name="parts" class="form-select form-select-sm">

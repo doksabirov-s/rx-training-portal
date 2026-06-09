@@ -44,23 +44,25 @@ def _merge_pptx(files: list[Path]) -> Path:
     return out
 
 
-async def _run_extended_slides(app, notebook_id: str, parts: int):
+async def _run_extended_slides(app, notebook_id: str, parts: int, topic: str = ""):
     """Generate `parts` slide decks and merge them into one PPTX."""
     client: NotebookLMClient = app.state.notebooklm
     _gen_status[notebook_id] = f"Extended slides: generating part 1 of {parts}…"
 
-    part_instructions = [
-        "Cover the first main topics and key concepts from the material.",
-        "Cover the next set of topics, data, and supporting details.",
-        "Cover advanced topics, case studies, conclusions, and recommendations.",
-        "Cover additional details, appendix material, and supplementary information.",
+    topic_prefix = f"Topic: {topic}. " if topic.strip() else ""
+
+    part_suffixes = [
+        "Focus on introduction, key definitions, and main concepts.",
+        "Focus on detailed analysis, data, mechanisms, and supporting evidence.",
+        "Focus on clinical applications, case studies, and practical recommendations.",
+        "Focus on conclusions, future directions, and supplementary information.",
     ]
 
     pptx_files: list[Path] = []
     try:
         for i in range(parts):
             _gen_status[notebook_id] = f"Extended slides: generating part {i + 1} of {parts}…"
-            instructions = part_instructions[i % len(part_instructions)]
+            instructions = topic_prefix + part_suffixes[i % len(part_suffixes)]
             task = await client.artifacts.generate_slide_deck(
                 notebook_id,
                 instructions=instructions,
@@ -147,10 +149,11 @@ async def generate_extended_slides(
     request: Request,
     background_tasks: BackgroundTasks,
     parts: int = Form(2),
+    topic: str = Form(""),
     client: NotebookLMClient = Depends(get_client),
 ):
     parts = max(1, min(parts, 4))  # clamp 1–4
-    background_tasks.add_task(_run_extended_slides, request.app, notebook_id, parts)
+    background_tasks.add_task(_run_extended_slides, request.app, notebook_id, parts, topic)
     slides = parts * 16
     return RedirectResponse(
         url=f"/notebooks/{notebook_id}?status=Generating+{slides}+slides+in+{parts}+parts.+Refresh+to+check+status.",
