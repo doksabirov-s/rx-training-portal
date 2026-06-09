@@ -95,7 +95,7 @@ async def _run_extended_slides(
             await client.artifacts.wait_for_completion(notebook_id, task.task_id, timeout=600.0)
 
             out = _DOWNLOADS / f"{notebook_id}_slides_part{i + 1}.pptx"
-            await client.artifacts.download_slide_deck(notebook_id, out, format="pptx")
+            await client.artifacts.download_slide_deck(notebook_id, out, output_format="pptx")
             pptx_files.append(out)
 
         _gen_status[notebook_id] = "Extended slides: объединяю файлы…"
