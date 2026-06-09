@@ -1,0 +1,60 @@
+/* RX Training Portal — custom styles */
+
+.rxp-navbar {
+    background: linear-gradient(135deg, #1a3a6b 0%, #2563eb 100%);
+}
+
+.rxp-card {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.rxp-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.12) !important;
+}
+
+.rxp-icon-circle {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* Chat bubbles */
+#chat-messages {
+    background: #f8f9fa;
+    border-radius: .5rem;
+    padding: .75rem;
+}
+
+/* Ensure Bootstrap min-w-0 is respected */
+.min-w-0 { min-width: 0; }
+
+/* Nav tab active accent */
+.nav-tabs .nav-link.active {
+    border-top: 3px solid #2563eb;
+    color: #2563eb;
+    font-weight: 600;
+}
+.nav-tabs .nav-link {
+    color: #6c757d;
+}
+.nav-tabs .nav-link:hover {
+    color: #2563eb;
+}
+
+/* List group hover state */
+.list-group-item {
+    transition: background-color 0.1s;
+}
+.list-group-item:hover {
+    background-color: #f0f4ff;
+}
+
+/* Generation in-progress spinner color */
+.spinner-border.text-warning {
+    width: 1.1rem;
+    height: 1.1rem;
+}
