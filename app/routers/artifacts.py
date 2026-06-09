@@ -73,12 +73,12 @@ async def _run_extended_slides(
         except Exception as exc:
             _gen_status[notebook_id] = f"Поиск завершён с ошибкой ({exc}), продолжаю генерацию…"
 
-    topic_prefix = f"Topic: {topic}. " if topic.strip() else ""
+    topic_prefix = f"Тема: {topic}. " if topic.strip() else ""
     part_suffixes = [
-        "Focus on introduction, key definitions, and main concepts.",
-        "Focus on detailed analysis, data, mechanisms, and supporting evidence.",
-        "Focus on clinical applications, case studies, and practical recommendations.",
-        "Focus on conclusions, future directions, and supplementary information.",
+        "Введение, ключевые определения и основные концепции. Язык презентации: русский.",
+        "Детальный анализ, данные, механизмы и доказательная база. Язык презентации: русский.",
+        "Клиническое применение, кейсы и практические рекомендации. Язык презентации: русский.",
+        "Выводы, перспективы и дополнительная информация. Язык презентации: русский.",
     ]
 
     pptx_files: list[Path] = []
@@ -88,6 +88,7 @@ async def _run_extended_slides(
             instructions = topic_prefix + part_suffixes[i % len(part_suffixes)]
             task = await client.artifacts.generate_slide_deck(
                 notebook_id,
+                language="ru",
                 instructions=instructions,
                 slide_format=SlideDeckFormat.DETAILED_DECK,
             )
