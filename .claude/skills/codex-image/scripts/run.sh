@@ -12,4 +12,9 @@ if [ ! -x "$VENV/bin/python" ]; then
   "$VENV/bin/pip" install --quiet --upgrade openai
 fi
 
-exec "$VENV/bin/python" "$SKILL_DIR/scripts/codex_image.py" "$@"
+IMG=$("$VENV/bin/python" "$SKILL_DIR/scripts/codex_image.py" "$@")
+echo "$IMG"
+
+if [[ "$(uname)" == "Darwin" ]] && [[ -f "$IMG" ]]; then
+  open "$IMG"
+fi
