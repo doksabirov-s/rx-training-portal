@@ -22,22 +22,32 @@ def _merge_pptx(files: list[Path]) -> Path:
     from pptx import Presentation
     from pptx.oxml.ns import qn
 
+    if len(files) == 1:
+        return files[0]
+
     base = Presentation(str(files[0]))
+
+    # Tags that must not be duplicated (already present in every new slide's spTree)
+    _SKIP = {qn("p:nvGrpSpPr"), qn("p:grpSpPr")}
 
     for src_path in files[1:]:
         src = Presentation(str(src_path))
-        # Copy slide layouts/masters mapping isn't needed for simple copy
         for slide in src.slides:
-            # Add a blank slide using the first layout of base
-            layout = base.slide_layouts[0]
+            # Blank layout (index 6 is truly blank; fall back to 0)
+            try:
+                layout = base.slide_layouts[6]
+            except IndexError:
+                layout = base.slide_layouts[0]
             new_slide = base.slides.add_slide(layout)
-            # Remove placeholder shapes from the blank slide
             sp_tree = new_slide.shapes._spTree
-            for ph in sp_tree.findall(qn("p:sp")):
-                sp_tree.remove(ph)
-            # Copy all shapes from source slide
+            # Remove all placeholder shapes added by the layout
+            for ph in list(sp_tree):
+                if ph.tag not in _SKIP:
+                    sp_tree.remove(ph)
+            # Copy content elements from source slide, skipping structural headers
             for el in slide.shapes._spTree:
-                sp_tree.append(copy.deepcopy(el))
+                if el.tag not in _SKIP:
+                    sp_tree.append(copy.deepcopy(el))
 
     out = _DOWNLOADS / f"{files[0].stem}_merged.pptx"
     base.save(str(out))
