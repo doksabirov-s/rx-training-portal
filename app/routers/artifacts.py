@@ -17,6 +17,22 @@ _DOWNLOADS.mkdir(exist_ok=True)
 _gen_status: dict[str, str] = {}
 
 
+def _remove_logo(pptx_path: Path) -> None:
+    """Remove NotebookLM logo watermark (picture shapes) from every slide."""
+    from pptx import Presentation
+    from pptx.oxml.ns import qn
+
+    prs = Presentation(str(pptx_path))
+    changed = False
+    for slide in prs.slides:
+        sp_tree = slide.shapes._spTree
+        for pic in list(sp_tree.findall(qn("p:pic"))):
+            sp_tree.remove(pic)
+            changed = True
+    if changed:
+        prs.save(str(pptx_path))
+
+
 def _merge_pptx(files: list[Path]) -> Path:
     """Merge multiple PPTX files into one by copying slide XML."""
     from pptx import Presentation
@@ -106,6 +122,7 @@ async def _run_extended_slides(
 
             out = _DOWNLOADS / f"{notebook_id}_slides_part{i + 1}.pptx"
             await client.artifacts.download_slide_deck(notebook_id, out, output_format="pptx")
+            _remove_logo(out)
             pptx_files.append(out)
 
         _gen_status[notebook_id] = "Extended slides: объединяю файлы…"
