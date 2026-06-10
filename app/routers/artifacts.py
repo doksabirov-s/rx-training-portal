@@ -284,9 +284,13 @@ async def slides_history(notebook_id: str):
 
 @router.get("/notebooks/{notebook_id}/artifacts/slides/file/{filename}")
 async def download_slide_file(notebook_id: str, filename: str):
+    if ".." in filename or "/" in filename:
+        raise HTTPException(status_code=403, detail="Access denied")
     history = _load_history()
     allowed = {r["filename"] for r in history.get(notebook_id, [])}
-    if filename not in allowed:
+    # Also allow auto-discovered files that belong to this notebook
+    is_owned = filename.startswith(notebook_id + "_") and filename.endswith(".pptx")
+    if filename not in allowed and not is_owned:
         raise HTTPException(status_code=403, detail="Access denied")
     path = _DOWNLOADS / filename
     if not path.exists():
