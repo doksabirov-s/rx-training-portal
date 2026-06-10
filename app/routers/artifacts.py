@@ -34,7 +34,7 @@ def _remove_logo(pptx_path: Path) -> None:
 
 
 def _merge_pptx(files: list[Path]) -> Path:
-    """Merge multiple PPTX files into one by copying slide XML."""
+    """Merge PPTX files by replacing slide content wholesale."""
     from pptx import Presentation
     from pptx.oxml.ns import qn
 
@@ -43,27 +43,23 @@ def _merge_pptx(files: list[Path]) -> Path:
 
     base = Presentation(str(files[0]))
 
-    # Tags that must not be duplicated (already present in every new slide's spTree)
-    _SKIP = {qn("p:nvGrpSpPr"), qn("p:grpSpPr")}
-
     for src_path in files[1:]:
         src = Presentation(str(src_path))
-        for slide in src.slides:
-            # Blank layout (index 6 is truly blank; fall back to 0)
+        for src_slide in src.slides:
             try:
-                layout = base.slide_layouts[6]
+                layout = base.slide_layouts[6]  # blank
             except IndexError:
                 layout = base.slide_layouts[0]
             new_slide = base.slides.add_slide(layout)
-            sp_tree = new_slide.shapes._spTree
-            # Remove all placeholder shapes added by the layout
-            for ph in list(sp_tree):
-                if ph.tag not in _SKIP:
-                    sp_tree.remove(ph)
-            # Copy content elements from source slide, skipping structural headers
-            for el in slide.shapes._spTree:
-                if el.tag not in _SKIP:
-                    sp_tree.append(copy.deepcopy(el))
+
+            # Replace cSld (shapes/background) and clrMapOvr (colors) wholesale
+            for tag in (qn("p:cSld"), qn("p:clrMapOvr")):
+                src_child = src_slide._element.find(tag)
+                new_child = new_slide._element.find(tag)
+                if src_child is not None and new_child is not None:
+                    new_slide._element.replace(new_child, copy.deepcopy(src_child))
+                elif src_child is not None:
+                    new_slide._element.append(copy.deepcopy(src_child))
 
     out = _DOWNLOADS / f"{files[0].stem}_merged.pptx"
     base.save(str(out))
