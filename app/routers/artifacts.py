@@ -59,36 +59,84 @@ def _remove_logo(pptx_path: Path) -> None:
         prs.save(str(pptx_path))
 
 
+def _rewrite_zip(zip_path: Path, updates: dict) -> None:
+    """Rewrite a ZIP file, replacing or adding entries from updates dict."""
+    import zipfile, os
+    tmp = zip_path.with_suffix(".tmp.pptx")
+    with zipfile.ZipFile(zip_path, "r") as src, zipfile.ZipFile(tmp, "w", zipfile.ZIP_DEFLATED) as dst:
+        for item in src.infolist():
+            dst.writestr(item.filename, updates.pop(item.filename, None) or src.read(item.filename))
+        for path, data in updates.items():
+            dst.writestr(path, data)
+    os.replace(str(tmp), str(zip_path))
+
+
 def _merge_pptx(files: list[Path]) -> Path:
-    """Merge PPTX files by replacing slide content wholesale."""
-    from pptx import Presentation
-    from pptx.oxml.ns import qn
+    """Merge PPTX files via direct ZIP manipulation (no python-pptx object model)."""
+    import zipfile, shutil, re
 
     if len(files) == 1:
         return files[0]
 
-    base = Presentation(str(files[0]))
-
-    for src_path in files[1:]:
-        src = Presentation(str(src_path))
-        for src_slide in src.slides:
-            try:
-                layout = base.slide_layouts[6]  # blank
-            except IndexError:
-                layout = base.slide_layouts[0]
-            new_slide = base.slides.add_slide(layout)
-
-            # Replace cSld (shapes/background) and clrMapOvr (colors) wholesale
-            for tag in (qn("p:cSld"), qn("p:clrMapOvr")):
-                src_child = src_slide._element.find(tag)
-                new_child = new_slide._element.find(tag)
-                if src_child is not None and new_child is not None:
-                    new_slide._element.replace(new_child, copy.deepcopy(src_child))
-                elif src_child is not None:
-                    new_slide._element.append(copy.deepcopy(src_child))
+    SLIDE_TYPE = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide"
+    CT_SLIDE = "application/vnd.openxmlformats-officedocument.presentationml.slide+xml"
 
     out = _DOWNLOADS / f"{files[0].stem}_merged.pptx"
-    base.save(str(out))
+    shutil.copy(str(files[0]), str(out))
+
+    for src_file in files[1:]:
+        with zipfile.ZipFile(out, "r") as z:
+            names = z.namelist()
+            prs_rels = z.read("ppt/_rels/presentation.xml.rels").decode("utf-8")
+            prs_xml  = z.read("ppt/presentation.xml").decode("utf-8")
+            ct_xml   = z.read("[Content_Types].xml").decode("utf-8")
+
+        base_count = len([n for n in names if re.match(r"ppt/slides/slide\d+\.xml$", n)])
+        max_rid = max((int(m) for m in re.findall(r'Id="rId(\d+)"', prs_rels)), default=0)
+        max_sid = max((int(m) for m in re.findall(r'<p:sldId[^>]+id="(\d+)"', prs_xml)), default=255)
+
+        updates: dict[str, bytes] = {}
+
+        with zipfile.ZipFile(src_file, "r") as sz:
+            src_names = sz.namelist()
+            src_slides = sorted(
+                [n for n in src_names if re.match(r"ppt/slides/slide\d+\.xml$", n)],
+                key=lambda x: int(re.search(r"\d+", x).group()),
+            )
+            for i, slide_path in enumerate(src_slides):
+                new_num  = base_count + i + 1
+                new_slide = f"ppt/slides/slide{new_num}.xml"
+                new_rels  = f"ppt/slides/_rels/slide{new_num}.xml.rels"
+
+                updates[new_slide] = sz.read(slide_path)
+
+                src_rels_name = slide_path.replace("slides/", "slides/_rels/") + ".rels"
+                if src_rels_name in src_names:
+                    updates[new_rels] = sz.read(src_rels_name)
+
+                max_rid += 1; max_sid += 1
+                rid = f"rId{max_rid}"
+
+                prs_rels = prs_rels.replace(
+                    "</Relationships>",
+                    f'<Relationship Id="{rid}" Type="{SLIDE_TYPE}" '
+                    f'Target="slides/slide{new_num}.xml"/></Relationships>',
+                )
+                prs_xml = prs_xml.replace(
+                    "</p:sldIdLst>",
+                    f'<p:sldId id="{max_sid}" r:id="{rid}"/></p:sldIdLst>',
+                )
+                ct_xml = ct_xml.replace(
+                    "</Types>",
+                    f'<Override PartName="/ppt/slides/slide{new_num}.xml" '
+                    f'ContentType="{CT_SLIDE}"/></Types>',
+                )
+
+        updates["ppt/_rels/presentation.xml.rels"] = prs_rels.encode("utf-8")
+        updates["ppt/presentation.xml"]            = prs_xml.encode("utf-8")
+        updates["[Content_Types].xml"]             = ct_xml.encode("utf-8")
+        _rewrite_zip(out, updates)
+
     return out
 
 
