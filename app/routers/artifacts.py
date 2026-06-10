@@ -1,5 +1,7 @@
 import copy
+import json
 import tempfile
+from datetime import datetime
 from pathlib import Path
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Form, HTTPException, Request
@@ -12,9 +14,33 @@ router = APIRouter()
 
 _DOWNLOADS = Path(tempfile.gettempdir()) / "rx_portal_downloads"
 _DOWNLOADS.mkdir(exist_ok=True)
+_SLIDES_DB = _DOWNLOADS / "slides_history.json"
 
 # In-memory generation status: notebook_id -> message string
 _gen_status: dict[str, str] = {}
+
+
+def _load_history() -> dict:
+    if _SLIDES_DB.exists():
+        try:
+            return json.loads(_SLIDES_DB.read_text(encoding="utf-8"))
+        except Exception:
+            return {}
+    return {}
+
+
+def _save_slide_record(notebook_id: str, path: Path, topic: str, parts: int) -> None:
+    history = _load_history()
+    records = history.get(notebook_id, [])
+    records.append({
+        "filename": path.name,
+        "topic": topic.strip() or "Без темы",
+        "parts": parts,
+        "slides": parts * 16,
+        "created_at": datetime.now().strftime("%d.%m.%Y %H:%M"),
+    })
+    history[notebook_id] = records
+    _SLIDES_DB.write_text(json.dumps(history, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
 def _remove_logo(pptx_path: Path) -> None:
@@ -123,6 +149,7 @@ async def _run_extended_slides(
 
         _gen_status[notebook_id] = "Extended slides: объединяю файлы…"
         merged = _merge_pptx(pptx_files)
+        _save_slide_record(notebook_id, merged, topic, parts)
         _gen_status[notebook_id] = f"__slides_ready__{merged}"
     except Exception as exc:
         _gen_status[notebook_id] = f"Ошибка генерации: {exc}"
@@ -232,6 +259,29 @@ async def generation_status(notebook_id: str):
     if status and status.startswith("__slides_ready__"):
         return {"status": None, "slides_ready": True}
     return {"status": status, "slides_ready": False}
+
+
+@router.get("/notebooks/{notebook_id}/artifacts/slides/history")
+async def slides_history(notebook_id: str):
+    history = _load_history()
+    records = [r for r in history.get(notebook_id, []) if (_DOWNLOADS / r["filename"]).exists()]
+    return {"records": records}
+
+
+@router.get("/notebooks/{notebook_id}/artifacts/slides/file/{filename}")
+async def download_slide_file(notebook_id: str, filename: str):
+    history = _load_history()
+    allowed = {r["filename"] for r in history.get(notebook_id, [])}
+    if filename not in allowed:
+        raise HTTPException(status_code=403, detail="Access denied")
+    path = _DOWNLOADS / filename
+    if not path.exists():
+        raise HTTPException(status_code=404, detail="File not found")
+    return FileResponse(
+        path=str(path),
+        media_type="application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        filename=filename,
+    )
 
 
 @router.get("/notebooks/{notebook_id}/artifacts/audio/download")
