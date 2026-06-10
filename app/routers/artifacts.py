@@ -265,6 +265,20 @@ async def generation_status(notebook_id: str):
 async def slides_history(notebook_id: str):
     history = _load_history()
     records = [r for r in history.get(notebook_id, []) if (_DOWNLOADS / r["filename"]).exists()]
+
+    # Auto-discover merged PPTX files not yet in the database
+    known = {r["filename"] for r in records}
+    for path in sorted(_DOWNLOADS.glob(f"{notebook_id}_*merged*.pptx"), key=lambda p: p.stat().st_mtime):
+        if path.name not in known:
+            records.append({
+                "filename": path.name,
+                "topic": "Без темы",
+                "parts": "—",
+                "slides": "—",
+                "created_at": datetime.fromtimestamp(path.stat().st_mtime).strftime("%d.%m.%Y %H:%M"),
+            })
+            known.add(path.name)
+
     return {"records": records}
 
 
