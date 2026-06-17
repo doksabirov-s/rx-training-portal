@@ -5,7 +5,7 @@ class PDF(FPDF):
     def header(self):
         self.set_font("DejaVu", "B", 9)
         self.set_text_color(100, 100, 100)
-        self.cell(0, 8, "MPFF при беременности — Обзор литературы", align="C")
+        self.cell(0, 8, "МОФФ (диосмин + гесперидин) при беременности — Обзор литературы", align="C")
         self.ln(4)
         self.set_draw_color(0, 102, 178)
         self.set_line_width(0.5)
@@ -108,7 +108,7 @@ pdf.add_page()
 pdf.ln(30)
 pdf.set_font("DejaVu", "B", 24)
 pdf.set_text_color(0, 70, 140)
-pdf.multi_cell(0, 12, "MPFF\n(Диосмин 90% + Гесперидин 10%)\nпри беременности", align="C")
+pdf.multi_cell(0, 12, "МОФФ\n(микронизированная очищенная фракция\nфлавоноидов: диосмин + гесперидин)\nпри беременности", align="C")
 pdf.ln(10)
 pdf.set_font("DejaVu", "", 16)
 pdf.set_text_color(80, 80, 80)
@@ -138,7 +138,7 @@ pdf.bold_text("Дизайн:")
 pdf.body_text("Открытое проспективное исследование, 50 беременных женщин с острым геморроем.")
 
 pdf.bold_text("Препарат:")
-pdf.body_text("Микронизированный диосмин 90% + гесперидин 10% (MPFF).")
+pdf.body_text("Микронизированный диосмин 90% + гесперидин 10% (МОФФ).")
 
 pdf.bold_text("Длительность:")
 pdf.body_text("Медиана 8 недель до родов + 4 недели после родов.")
@@ -328,7 +328,7 @@ pdf.add_page()
 pdf.section_title("2", "МЕТААНАЛИЗЫ И СИСТЕМАТИЧЕСКИЕ ОБЗОРЫ")
 
 # 2.1
-pdf.sub_title("2.1 Sheikh P et al., 2020 — Метаанализ MPFF при геморрое")
+pdf.sub_title("2.1 Sheikh P et al., 2020 — Метаанализ МОФФ при геморрое")
 pdf.bold_text("Sheikh P, Lohsiriwat V, Shelygin Y.")
 pdf.italic_text("Micronized Purified Flavonoid Fraction in Hemorrhoid Disease:\nA Systematic Review and Meta-Analysis.\nAdv Ther. 2020 Jun;37(6):2792-2812.")
 pdf.ref_text("PMID: 32399811 | PMC: PMC7467450 | DOI: 10.1007/s12325-020-01353-7")
@@ -354,7 +354,7 @@ pdf.rect(10, y, 190, 14, style="D")
 pdf.set_xy(14, y + 3)
 pdf.set_font("DejaVu", "B", 9.5)
 pdf.set_text_color(0, 80, 0)
-pdf.multi_cell(182, 5.5, 'Вывод: «MPFF улучшает наиболее важные признаки и симптомы геморроидальной болезни: кровотечение, боль, зуд, тенезмы и анальные выделения.»')
+pdf.multi_cell(182, 5.5, 'Вывод: «МОФФ (диосмин + гесперидин) улучшает наиболее важные признаки и симптомы геморроидальной болезни: кровотечение, боль, зуд, тенезмы и анальные выделения.»')
 pdf.ln(6)
 
 # 2.2
@@ -364,53 +364,53 @@ pdf.italic_text("Efficacy and tolerability of micronized purified flavonoid frac
 pdf.ref_text("PMID: 30012392 | DOI: 10.1016/j.ctim.2018.05.011")
 pdf.body_text(
     "• 10 РКИ, 1 164 участника\n"
-    "• MPFF значительно улучшает кровотечение: RR 1.46 (1.10–1.93; p = 0.008)"
+    "• МОФФ (диосмин + гесперидин) значительно улучшает кровотечение: RR 1.46 (1.10–1.93; p = 0.008)"
 )
 
 # ========== SECTION 3 ==========
 pdf.add_page()
-pdf.section_title("3", "ОБЗОРЫ ПО MPFF И ГАЙДЛАЙНАМ")
+pdf.section_title("3", "ОБЗОРЫ ПО МОФФ И ГАЙДЛАЙНАМ")
 
 # 3.1
 pdf.sub_title("3.1 Santiago FR et al., 2026 (самый свежий)")
 pdf.italic_text("Venoactive drugs in the management of chronic venous disease: A critical appraisal\nof the evidence and comparison with international guidelines.\nVascul Pharmacol. 2026;163:107614.")
 pdf.ref_text("PMID: 42066876 | DOI: 10.1016/j.vph.2026.107614")
-pdf.body_text("MPFF — предпочтительный вариант во всех международных гайдлайнах, подкреплённый доказательствами высокого качества.")
+pdf.body_text("МОФФ (диосмин + гесперидин) — предпочтительный вариант во всех международных гайдлайнах, подкреплённый доказательствами высокого качества.")
 pdf.ln(2)
 
 # 3.2
 pdf.sub_title("3.2 Gianesini S et al., 2023")
 pdf.italic_text("Cardiovascular Insights for the Appropriate Management of CVD.\nAdv Ther. 2023;40(12):5137-5154.")
 pdf.ref_text("PMID: 37768506 | PMC: PMC10611621 | DOI: 10.1007/s12325-023-02657-0")
-pdf.body_text("Материалы XIX World Congress of International Union of Phlebology (Стамбул, 2022). MPFF — VAD с доказательствами высокого качества.")
+pdf.body_text("Материалы XIX World Congress of International Union of Phlebology (Стамбул, 2022). МОФФ (диосмин + гесперидин) — веноактивный препарат с доказательствами высокого качества.")
 pdf.ln(2)
 
 # 3.3
 pdf.sub_title("3.3 Lurie F, Branisteanu DE, 2023")
 pdf.italic_text("Improving CVD Management with Micronised Purified Flavonoid Fraction.\nClin Drug Investig. 2023;43(Suppl 1):9-13.")
 pdf.ref_text("PMID: 37171748 | PMC: PMC10220107 | DOI: 10.1007/s40261-023-01261-y")
-pdf.body_text("MPFF — единственный VAD с подтверждённым улучшением качества жизни по данным гайдлайнов. Высоко рекомендуется в международных рекомендациях.")
+pdf.body_text("МОФФ (диосмин + гесперидин) — единственный веноактивный препарат с подтверждённым улучшением качества жизни по данным гайдлайнов. Высоко рекомендуется в международных рекомендациях.")
 pdf.ln(2)
 
 # 3.4
 pdf.sub_title("3.4 Bouskela E, Lugli M, Nicolaides A, 2022")
 pdf.italic_text("New Perspectives on Micronised Purified Flavonoid Fraction in CVD.\nAdv Ther. 2022;39(10):4413-4422.")
 pdf.ref_text("PMID: 35951224 | PMC: PMC9464747 | DOI: 10.1007/s12325-022-02218-x")
-pdf.body_text("Международные гайдлайны строго рекомендуют MPFF для уменьшения симптомов и улучшения качества жизни.")
+pdf.body_text("Международные гайдлайны строго рекомендуют МОФФ (диосмин + гесперидин) для уменьшения симптомов и улучшения качества жизни.")
 pdf.ln(2)
 
 # 3.5
 pdf.sub_title("3.5 Li KX et al., 2021 — нарративный обзор")
 pdf.italic_text("MPFF for the treatment of CVI with a focus on postthrombotic syndrome.\nRes Pract Thromb Haemost. 2021;5(4):e12527.")
 pdf.ref_text("PMID: 34027293 | PMC: PMC8128666 | DOI: 10.1002/rth2.12527")
-pdf.body_text("Включено: 14 систематических обзоров, 33 РКИ, 19 наблюдательных исследований. MPFF улучшает клинические проявления, качество жизни и объективные венозные параметры ХВН.")
+pdf.body_text("Включено: 14 систематических обзоров, 33 РКИ, 19 наблюдательных исследований. МОФФ (диосмин + гесперидин) улучшает клинические проявления, качество жизни и объективные венозные параметры ХВН.")
 pdf.ln(2)
 
 # 3.6
 pdf.sub_title("3.6 Cazaubon M et al., 2021")
 pdf.italic_text("Is There a Difference in the Clinical Efficacy of Diosmin and MPFF?\nVasc Health Risk Manag. 2021;17:591-600.")
 pdf.ref_text("PMID: 34556990 | PMC: PMC8455100 | DOI: 10.2147/VHRM.S324112")
-pdf.body_text("Подтверждает рекомендацию 1B (сильная рекомендация, умеренное качество доказательств) для MPFF в гайдлайнах по ХВН.")
+pdf.body_text("Подтверждает рекомендацию 1B (сильная рекомендация, умеренное качество доказательств) для МОФФ (диосмин + гесперидин) в гайдлайнах по ХВН.")
 
 # ========== SECTION 4 ==========
 pdf.ln(4)
@@ -421,7 +421,7 @@ pdf.sub_title("4.1 ESVS 2022 — European Society for Vascular Surgery")
 pdf.italic_text("Clinical Practice Guidelines on the Management of Chronic Venous Disease\nof the Lower Limbs.\nEur J Vasc Endovasc Surg. 2022 Feb.")
 pdf.ref_text("URL: https://www.ejves.com/article/S1078-5884(21)00979-5/fulltext")
 pdf.body_text(
-    "• MPFF имеет наивысшую степень рекомендации среди VAD\n"
+    "• МОФФ (диосмин + гесперидин) имеет наивысшую степень рекомендации среди веноактивных препаратов\n"
     "• 7 двойных слепых плацебо-контролируемых РКИ (1 692 пациента)\n"
     "• Значительное улучшение: симптомов, функционального дискомфорта,\n"
     "  качества жизни и окружности лодыжки\n"
@@ -433,7 +433,7 @@ pdf.ln(2)
 pdf.sub_title("4.2 SVS/AVF/AVLS 2023 — Society for Vascular Surgery")
 pdf.italic_text("Clinical practice guidelines for varicose veins. Part II.\nJ Vasc Surg Venous Lymphat Disord. 2023.")
 pdf.ref_text("URL: https://www.jvsvenous.org/article/S2213-333X(23)00322-0/fulltext")
-pdf.body_text("Гайдлайны отдают предпочтение MPFF и экстрактам Ruscus как наиболее изученным в двойных слепых плацебо-контролируемых РКИ и метаанализах.")
+pdf.body_text("Гайдлайны отдают предпочтение МОФФ (диосмин + гесперидин) и экстрактам Ruscus как наиболее изученным в двойных слепых плацебо-контролируемых РКИ и метаанализах.")
 pdf.ln(2)
 
 # IUP
@@ -447,7 +447,7 @@ pdf.ref_text(
 pdf.body_text(
     "Ключевые рекомендации:\n"
     "• При ХВН у беременных — немедленное начало лечения: компрессия + венотоник\n"
-    "• MPFF — рекомендация 1B (сильная, умеренное качество доказательств)\n"
+    "• МОФФ (диосмин + гесперидин) — рекомендация 1B (сильная, умеренное качество доказательств)\n"
     "• Уменьшение отёчности — Grade A (высокий уровень доказательности)\n"
     "• Подтверждённое улучшение качества жизни"
 )
@@ -469,7 +469,7 @@ pdf.cell(0, 7, "СЛАЙД 1: Безопасность при беременно
 pdf.set_xy(14, y + 12)
 pdf.set_font("DejaVu", "", 9.5)
 pdf.set_text_color(30, 30, 30)
-pdf.multi_cell(178, 5.5, "Buckshee 1997 (n=50): У 50 беременных MPFF (микронизированный диосмин 90% + гесперидин 10%) применялся ~8 недель до родов и 4 недели после. Результат: 66% облегчение к 4-му дню, значимое уменьшение рецидивов (P<0.001), хорошая переносимость, без негативного влияния на беременность, плод и новорождённого.")
+pdf.multi_cell(178, 5.5, "Buckshee 1997 (n=50): У 50 беременных МОФФ (микронизированный диосмин 90% + гесперидин 10%) применялся ~8 недель до родов и 4 недели после. Результат: 66% облегчение к 4-му дню, значимое уменьшение рецидивов (P<0.001), хорошая переносимость, без негативного влияния на беременность, плод и новорождённого.")
 pdf.ln(6)
 
 # Slide 2
@@ -495,7 +495,7 @@ pdf.cell(0, 7, "СЛАЙД 3: Эффективность при геморрое
 pdf.set_xy(14, y + 12)
 pdf.set_font("DejaVu", "", 9.5)
 pdf.set_text_color(30, 30, 30)
-pdf.multi_cell(178, 5.5, "Sheikh 2020 (11 РКИ, метаанализ): MPFF снижает кровотечение на 92% (OR 0.08), выделения на 88% (OR 0.12), общее улучшение в 5.25 раз по оценке пациентов (P<0.001). Единственный VAD с полным метаанализом по геморрою.")
+pdf.multi_cell(178, 5.5, "Sheikh 2020 (11 РКИ, метаанализ): МОФФ (диосмин + гесперидин) снижает кровотечение на 92% (OR 0.08), выделения на 88% (OR 0.12), общее улучшение в 5.25 раз по оценке пациентов (P<0.001). Единственный веноактивный препарат с полным метаанализом по геморрою.")
 pdf.ln(6)
 
 # Slide 4
@@ -508,7 +508,7 @@ pdf.cell(0, 7, "СЛАЙД 4: Позиция в гайдлайнах")
 pdf.set_xy(14, y + 12)
 pdf.set_font("DejaVu", "", 9.5)
 pdf.set_text_color(30, 30, 30)
-pdf.multi_cell(178, 5.5, "MPFF (диосмин 90% + гесперидин 10%) имеет рекомендацию 1B (самая сильная среди всех VAD) в международных гайдлайнах: ESVS 2022, SVS/AVF/AVLS 2023, IUP. Это единственный VAD с подтверждённым улучшением качества жизни по данным гайдлайнов.")
+pdf.multi_cell(178, 5.5, "МОФФ (диосмин + гесперидин) имеет рекомендацию 1B (самая сильная среди всех веноактивных препаратов) в международных гайдлайнах: ESVS 2022, SVS/AVF/AVLS 2023, IUP. Это единственный веноактивный препарат с подтверждённым улучшением качества жизни по данным гайдлайнов.")
 pdf.ln(8)
 
 # ========== SECTION 6: SUMMARY TABLE ==========
