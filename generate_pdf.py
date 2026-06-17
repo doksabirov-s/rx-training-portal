@@ -226,6 +226,103 @@ pdf.body_text(
     "  времени венозного оттока (p<0.001)"
 )
 
+# 1.5
+pdf.add_page()
+pdf.sub_title("1.5 Дженина О.В. et al., 2019 — вульварный и промежностный варикоз")
+pdf.bold_text("Дженина О.В., Богачев В.Ю., Боданская А.Л.")
+pdf.italic_text("Вульварный и промежностный варикоз у беременных.\nАмбулаторная хирургия. 2019; 1–2: 14–18.")
+pdf.ref_text("DOI: 10.21518/1995-1477-2019-1-2-14-18")
+pdf.ln(2)
+
+pdf.bold_text("Популяция:")
+pdf.body_text("192 беременных женщины с вульварным/промежностным варикозом во II и III триместрах.")
+
+pdf.bold_text("Препарат:")
+pdf.body_text("Диосмин с гесперидином 600 мг/сут.")
+
+pdf.bold_text("Данные EFEMERIS (в обзоре):")
+pdf.body_text("8 998 женщин принимали диосмин, троксерутин и гесперидин при беременности — отсутствие негативного влияния на беременность, родоразрешение и развитие плода.")
+
+pdf.bold_text("Ключевые результаты:")
+pdf.body_text(
+    "• Полное купирование боли: 47.29% (средняя интенсивность 5–6 баллов)\n"
+    "• Уменьшение боли на ≥2 балла: 27%\n"
+    "• Ни у одной из 192 пациенток НЕ БЫЛО осложнений\n"
+    "  беременности, родов и послеродового периода\n"
+    "• Спонтанного разрыва вариксов при вагинальных родах не отмечалось\n"
+    "• Рождения детей с пороками развития не отмечено"
+)
+
+pdf.set_fill_color(230, 245, 230)
+pdf.set_draw_color(0, 130, 0)
+pdf.set_line_width(0.4)
+y = pdf.get_y()
+pdf.rect(10, y, 190, 14, style="D")
+pdf.set_xy(14, y + 3)
+pdf.set_font("DejaVu", "B", 9.5)
+pdf.set_text_color(0, 80, 0)
+pdf.multi_cell(182, 5.5, 'Вывод: Диосмин с гесперидином безопасен при беременности и целесообразен при болевом синдроме на фоне вульварного/промежностного варикоза.')
+pdf.ln(8)
+
+# 1.6
+pdf.sub_title("1.6 Шибельгут Н.М. et al., 2010 — профилактика варикоза малого таза")
+pdf.bold_text("Шибельгут Н.М., Баскакова Т.Б., Захаров И.С., Мозес В.Г.")
+pdf.italic_text("Эффективность диосмина 600 мг при профилактике варикозной болезни\nвен малого таза у беременных.\nРоссийский вестник акушера-гинеколога. 2010; 3: 61–66.")
+pdf.ref_text("Полный текст: https://medi.ru/info/6662/")
+pdf.ln(2)
+
+pdf.bold_text("Дизайн:")
+pdf.body_text("Рандомизированное плацебо-контролируемое исследование.")
+
+pdf.bold_text("Популяция:")
+pdf.body_text("90 беременных (30 — диосмин с гесперидином, 60 — плацебо), III триместр.")
+
+pdf.bold_text("Препарат:")
+pdf.body_text("Диосмин с гесперидином 600 мг однократно в сутки.")
+
+pdf.bold_text("Оценка:")
+pdf.body_text("3-и сутки после родов, 6 месяцев после родов.")
+pdf.ln(2)
+
+# 1.7
+pdf.sub_title("1.7 Сучков И.А. et al., 2024 — исследование «СТАНДАРТ» (механизм действия)")
+pdf.bold_text("Сучков И.А., Мжаванадзе Н.Д., Калинин Р.Е. et al.")
+pdf.italic_text("Влияние комбинации биофлавоноидов гесперидина и диосмина\nв стандартизированных дозировках на показатели ремоделирования\nвенозной стенки.\nФлебология. 2024; 18(4): 293–301.")
+pdf.ref_text("DOI: 10.17116/flebo202418041293")
+pdf.ln(2)
+
+pdf.bold_text("Препарат:")
+pdf.body_text("Гесперидин 100 мг + диосмин 900 мг = 1000 мг/сут, курс 6 месяцев.")
+
+pdf.bold_text("Маркеры ремоделирования венозной стенки (через 6 мес):")
+pdf.ln(2)
+wm = [85, 50, 35]
+pdf.table_row(["Маркер", "Снижение", "p"], wm, header=True)
+pdf.table_row(["PAI-1", ">6-кратное", "<0.001"], wm)
+pdf.table_row(["Фибронектин (FN)", ">22-кратное", "<0.001"], wm)
+pdf.table_row(["Виментин (VIM)", "2-кратное", "0.042"], wm)
+pdf.table_row(["vWF", "3-кратное", "0.001"], wm)
+pdf.table_row(["PECAM-1 (CD31)", "1.5-кратное", "<0.001"], wm)
+pdf.ln(2)
+
+pdf.bold_text("Симптомы и качество жизни:")
+pdf.body_text(
+    "• ВАШ (боль): 4-кратное снижение\n"
+    "• VCSS (тяжесть ХЗВ): 3-кратное снижение\n"
+    "• CIVIQ-20 (качество жизни): >4-кратное улучшение (p<0.001)"
+)
+
+pdf.set_fill_color(255, 250, 230)
+pdf.set_draw_color(180, 140, 0)
+pdf.set_line_width(0.4)
+y = pdf.get_y()
+pdf.rect(10, y, 190, 14, style="D")
+pdf.set_xy(14, y + 3)
+pdf.set_font("DejaVu", "I", 9)
+pdf.set_text_color(100, 80, 0)
+pdf.multi_cell(182, 5.5, 'Примечание: исследование не включало беременных, но демонстрирует молекулярный механизм действия комбинации диосмина с гесперидином на венозную стенку.')
+pdf.ln(6)
+
 # ========== SECTION 2 ==========
 pdf.add_page()
 pdf.section_title("2", "МЕТААНАЛИЗЫ И СИСТЕМАТИЧЕСКИЕ ОБЗОРЫ")
@@ -425,17 +522,20 @@ pdf.table_row(["1", "Buckshee K et al.", "Int J Gynaecol Obstet", "1997", "КИ,
 pdf.table_row(["2", "Lacroix I et al.", "Phlebology", "2015", "Эпидемиол."], w)
 pdf.table_row(["3", "Kadioglu M et al.", "Reprod Toxicol", "2015", "Абстракт"], w)
 pdf.table_row(["4", "Tsouderos Y", "Int Angiol", "1989", "КИ, бер-ть"], w)
-pdf.table_row(["5", "Sheikh P et al.", "Adv Ther", "2020", "Метаанализ"], w)
-pdf.table_row(["6", "Aziz Z et al.", "Complement Ther Med", "2018", "Метаанализ"], w)
-pdf.table_row(["7", "Santiago FR et al.", "Vascul Pharmacol", "2026", "Обзор"], w)
-pdf.table_row(["8", "Gianesini S et al.", "Adv Ther", "2023", "Обзор"], w)
-pdf.table_row(["9", "Lurie F et al.", "Clin Drug Investig", "2023", "Обзор"], w)
-pdf.table_row(["10", "Bouskela E et al.", "Adv Ther", "2022", "Обзор"], w)
-pdf.table_row(["11", "Li KX et al.", "Res Pract Thromb", "2021", "Нарратив"], w)
-pdf.table_row(["12", "Cazaubon M et al.", "Vasc Health Risk", "2021", "Обзор"], w)
-pdf.table_row(["13", "ESVS 2022", "Eur J Vasc Endovasc", "2022", "Гайдлайн"], w)
-pdf.table_row(["14", "SVS/AVF/AVLS", "J Vasc Surg Venous", "2023", "Гайдлайн"], w)
-pdf.table_row(["15", "Gloviczki ML et al.", "J Vasc Surg Venous", "2025", "Сист. обзор"], w)
+pdf.table_row(["5", "Дженина О.В. et al.", "Амбулатор. хирургия", "2019", "КИ, бер-ть"], w)
+pdf.table_row(["6", "Шибельгут Н.М. et al.", "Рос. вестник акуш.", "2010", "РКИ, бер-ть"], w)
+pdf.table_row(["7", "Сучков И.А. et al.", "Флебология", "2024", "КИ, механ."], w)
+pdf.table_row(["8", "Sheikh P et al.", "Adv Ther", "2020", "Метаанализ"], w)
+pdf.table_row(["9", "Aziz Z et al.", "Complement Ther Med", "2018", "Метаанализ"], w)
+pdf.table_row(["10", "Santiago FR et al.", "Vascul Pharmacol", "2026", "Обзор"], w)
+pdf.table_row(["11", "Gianesini S et al.", "Adv Ther", "2023", "Обзор"], w)
+pdf.table_row(["12", "Lurie F et al.", "Clin Drug Investig", "2023", "Обзор"], w)
+pdf.table_row(["13", "Bouskela E et al.", "Adv Ther", "2022", "Обзор"], w)
+pdf.table_row(["14", "Li KX et al.", "Res Pract Thromb", "2021", "Нарратив"], w)
+pdf.table_row(["15", "Cazaubon M et al.", "Vasc Health Risk", "2021", "Обзор"], w)
+pdf.table_row(["16", "ESVS 2022", "Eur J Vasc Endovasc", "2022", "Гайдлайн"], w)
+pdf.table_row(["17", "SVS/AVF/AVLS", "J Vasc Surg Venous", "2023", "Гайдлайн"], w)
+pdf.table_row(["18", "Gloviczki ML et al.", "J Vasc Surg Venous", "2025", "Сист. обзор"], w)
 
 pdf.ln(6)
 pdf.set_font("DejaVu", "", 8.5)
