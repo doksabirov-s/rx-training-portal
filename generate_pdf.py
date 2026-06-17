@@ -5,7 +5,7 @@ class PDF(FPDF):
     def header(self):
         self.set_font("DejaVu", "B", 9)
         self.set_text_color(100, 100, 100)
-        self.cell(0, 8, "MPFF при беременности — Обзор литературы для презентации Турбомикрон", align="C")
+        self.cell(0, 8, "MPFF при беременности — Обзор литературы", align="C")
         self.ln(4)
         self.set_draw_color(0, 102, 178)
         self.set_line_width(0.5)
@@ -113,11 +113,7 @@ pdf.ln(10)
 pdf.set_font("DejaVu", "", 16)
 pdf.set_text_color(80, 80, 80)
 pdf.cell(0, 10, "Обзор литературы", align="C", new_x="LMARGIN", new_y="NEXT")
-pdf.ln(5)
-pdf.set_font("DejaVu", "B", 14)
-pdf.set_text_color(0, 102, 178)
-pdf.cell(0, 10, "Для презентации Турбомикрон", align="C", new_x="LMARGIN", new_y="NEXT")
-pdf.ln(30)
+pdf.ln(40)
 pdf.set_font("DejaVu", "", 10)
 pdf.set_text_color(100, 100, 100)
 pdf.cell(0, 8, "Клинические исследования | Метаанализы | Международные гайдлайны", align="C", new_x="LMARGIN", new_y="NEXT")
@@ -221,7 +217,7 @@ pdf.ln(2)
 # 1.4
 pdf.sub_title("1.4 Tsouderos Y, 1989 — раннее фармакоклиническое исследование")
 pdf.bold_text("Tsouderos Y.")
-pdf.italic_text("Are the phlebotonic properties shown in clinical pharmacology predictive of a therapeutic benefit in CVI? Our experience with Daflon 500 mg.\nInt Angiol. 1989;8(4 Suppl):53-9.")
+pdf.italic_text("Are the phlebotonic properties shown in clinical pharmacology predictive of a therapeutic benefit in CVI? Our experience with micronized diosmin + hesperidin.\nInt Angiol. 1989;8(4 Suppl):53-9.")
 pdf.ref_text("PMID: 2698902")
 pdf.body_text(
     "• Включала группу беременных (Group II из 10 женщин)\n"
@@ -361,7 +357,7 @@ pdf.body_text(
 
 # ========== SECTION 5: KEY SLIDES ==========
 pdf.add_page()
-pdf.section_title("5", "ГОТОВЫЕ ТЕЗИСЫ ДЛЯ СЛАЙДОВ ПРЕЗЕНТАЦИИ")
+pdf.section_title("5", "КЛЮЧЕВЫЕ ТЕЗИСЫ")
 
 # Slide 1
 pdf.set_fill_color(230, 245, 255)

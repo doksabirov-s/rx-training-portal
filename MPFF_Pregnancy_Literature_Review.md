@@ -1,5 +1,5 @@
 # MPFF (Диосмин + Гесперидин) при беременности: Обзор литературы
-## Для презентации Турбомикрон
+## Обзор литературы
 
 ---
 
@@ -80,16 +80,16 @@ Reproductive Toxicology. 2015 Nov;57:225.
 ### 1.4 Tsouderos Y, 1989 (РАННЕЕ ФАРМАКОКЛИНИЧЕСКОЕ ИССЛЕДОВАНИЕ)
 
 **Tsouderos Y.**
-*Are the phlebotonic properties shown in clinical pharmacology predictive of a therapeutic benefit in chronic venous insufficiency? Our experience with Daflon 500 mg.*
+*Are the phlebotonic properties shown in clinical pharmacology predictive of a therapeutic benefit in chronic venous insufficiency? Our experience with micronized diosmin + hesperidin.*
 Int Angiol. 1989;8(4 Suppl):53-9.
 
 - **PMID:** 2698902
 - **PubMed:** https://pubmed.ncbi.nlm.nih.gov/2698902/
 
-**Важно для презентации:**
+**Важно:**
 - Включала 3 группы по 10 женщин с венозной недостаточностью, в том числе **группу беременных (Group II)**
 - Показан острый эффект повышения венозного тонуса через 1 и 2 часа после приема
-- Daflon 500 mg значительно снижал: венозную ёмкость (p < 0.001), венозную растяжимость (p < 0.001), время венозного оттока (p < 0.001)
+- Микронизированный диосмин с гесперидином значительно снижал: венозную ёмкость (p < 0.001), венозную растяжимость (p < 0.001), время венозного оттока (p < 0.001)
 
 ---
 
